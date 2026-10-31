@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "application": "legal-ai-compliance-checker",
+  "environment": "local-k3d",
+  "cluster_name": "legal-checker-local",
+  "context": "k3d-legal-checker-local",
+  "api_server": "https://127.0.0.1:6561",
+  "namespace": "legal-checker",
+  "argocd_namespace": "argocd",
+  "ports": {
+    "kube_api": 6561,
+    "backend": 18100,
+    "postgres": 15440,
+    "redis": 16380,
+    "argocd": 19443
+  },
+  "database": {
+    "name": "legal_checker_dev",
+    "user": "legal_checker",
+    "service": "postgres",
+    "port": 5432,
+    "secret": "legal-database"
+  },
+  "applications": {
+    "platform": "environments/local/platform",
+    "backend": "environments/local/apps"
+  },
+  "bootstrap_owner": "infrastructure",
+  "datastore_workload_owner": "gitops",
+  "migration_owner": "application"
+}

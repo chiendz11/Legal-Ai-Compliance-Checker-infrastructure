@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0.0",
+  "app_checkout": "../Legal-Ai-Compliance-Checker",
+  "gitops_checkout": "../Legal-Ai-Compliance-Checker-gitops",
+  "gitops_repository": "https://github.com/chiendz11/Legal-Ai-Compliance-Checker-gitops.git",
+  "gitops_revision": "main"
+}

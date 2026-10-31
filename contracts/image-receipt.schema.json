@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Local backend image receipt",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "image",
+    "image_id",
+    "source"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "image": {
+      "type": "string",
+      "pattern": "^legal-local/backend:image-[a-f0-9]{64}$"
+    },
+    "image_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "git_sha",
+        "dirty",
+        "snapshot_sha256"
+      ],
+      "properties": {
+        "git_sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$|^[a-f0-9]{64}$"
+        },
+        "dirty": {
+          "type": "boolean"
+        },
+        "snapshot_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "imported_context": {
+      "const": "k3d-legal-checker-local"
+    },
+    "imported_cluster_id": {
+      "type": "string"
+    }
+  },
+  "description": "Docker config ID plus local imported tag; not a fabricated OCI registry digest."
+}

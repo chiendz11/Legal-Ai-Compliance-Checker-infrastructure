@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Local DEV_VALIDATION seed receipt",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "cluster_id",
+    "image_id",
+    "distribution",
+    "workbook_sha256",
+    "knowledge_snapshot_sha256",
+    "seed_result"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "cluster_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "image_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "distribution": {
+      "const": "DEV_VALIDATION"
+    },
+    "workbook_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "knowledge_snapshot_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "seed_result": {
+      "type": "object"
+    }
+  },
+  "description": "Recorded only after the app-owned seed and knowledge hash check; not an E2E quality result."
+}

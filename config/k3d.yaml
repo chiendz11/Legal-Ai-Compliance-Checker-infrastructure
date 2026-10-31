@@ -1,0 +1,28 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: legal-checker-local
+servers: 1
+agents: 0
+image: __K3S_IMAGE__
+kubeAPI:
+  host: 127.0.0.1
+  hostIP: 127.0.0.1
+  hostPort: '6561'
+volumes:
+  - volume: __LOCAL_STORAGE__:/var/lib/rancher/k3s/storage
+    nodeFilters: [server:0]
+options:
+  k3d:
+    wait: true
+    timeout: 180s
+    disableLoadbalancer: false
+  k3s:
+    extraArgs:
+      - arg: --disable=traefik
+        nodeFilters: [server:0]
+      - arg: --disable=servicelb
+        nodeFilters: [server:0]
+  kubeconfig:
+    updateDefaultKubeconfig: false
+    switchCurrentContext: false

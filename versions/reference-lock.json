@@ -1,0 +1,32 @@
+{
+  "as_of": "2026-10-30",
+  "references": [
+    {
+      "name": "Maint-infrastructure",
+      "git_sha": "f63ab1928286469ff67928051548aeccee6793f1"
+    },
+    {
+      "name": "MaintAI-gitops",
+      "git_sha": "031e0c842f96e0408cad83089e294358ffa26f84"
+    },
+    {
+      "name": "Legal-Ai-Compliance-Checker",
+      "git_sha": "7065df74cb5b905c6544f222a94245d49ee2ffb6"
+    }
+  ],
+  "reuse": [
+    "ownership split",
+    "private kubeconfig",
+    "manual Argo sync",
+    "local image receipts"
+  ],
+  "not_copied": [
+    "datasets",
+    "secrets",
+    "Kafka",
+    "MLflow",
+    "Keycloak",
+    "AWS resources",
+    "runtime state"
+  ]
+}
