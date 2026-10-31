@@ -1,6 +1,12 @@
-# Legal AI Compliance Checker — infrastructure local
+# Legal AI Compliance Checker — Infrastructure as Code (IaC)
 
-Infrastructure **k3d local trước**, tham khảo cách chia ownership và handoff của `Maint-infrastructure` / `MaintAI-gitops`. Đây là hai folder mới, độc lập với MaintAI và repo ứng dụng. Chưa tạo GitHub remote, chạy tests/render/build, tạo cluster hoặc triển khai trong đợt viết code này.
+Hạ tầng được quản lý bằng **Terraform (IaC)** tương tự môi trường Production của MaintAI, hỗ trợ 2 môi trường:
+* **`terraform/local/`**: Cụm Kubernetes k3d local, Argo CD GitOps, tự động kéo image từ GHCR và đồng bộ với GitOps repo.
+* **`terraform/production/`**: Kiến trúc Production Cloud trên AWS (VPC, EKS Cluster, RDS PostgreSQL 17, S3 Documents, IAM/KMS).
+
+👉 **[Xem Hướng dẫn Bật Demo Nhanh bằng Terraform & GitOps tại đây](docs/DEMO_GUIDE.md)**
+
+---
 
 ## Hai folder phối hợp ra sao?
 

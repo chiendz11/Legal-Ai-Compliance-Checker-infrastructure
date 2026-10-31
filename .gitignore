@@ -11,5 +11,6 @@ __pycache__/
 build/
 dist/
 *.tfstate*
+.terraform/
 *.pem
 *.key
