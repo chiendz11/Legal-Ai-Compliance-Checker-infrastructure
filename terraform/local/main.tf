@@ -75,3 +75,4 @@ resource "null_resource" "argocd_sync" {
     EOT
   }
 }
+

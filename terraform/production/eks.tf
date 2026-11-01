@@ -47,3 +47,4 @@ resource "aws_eks_node_group" "primary" {
     Environment = var.environment
   }
 }
+

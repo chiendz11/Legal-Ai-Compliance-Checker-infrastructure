@@ -137,3 +137,4 @@ cd /home/chienqt/Dev/newBTL/Legal-Ai-Compliance-Checker-infrastructure/terraform
 terraform destroy -auto-approve
 ```
 Lệnh này sẽ tự động xóa sạch cluster k3d `legal-checker-local` mà không để lại tài nguyên rác trên máy.
+

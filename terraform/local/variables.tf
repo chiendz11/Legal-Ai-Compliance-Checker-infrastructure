@@ -15,3 +15,4 @@ variable "gitops_revision" {
   default     = "main"
   description = "Git revision for Argo CD applications in Legal-Ai-Compliance-Checker-gitops"
 }
+

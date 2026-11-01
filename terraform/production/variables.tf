@@ -51,3 +51,4 @@ variable "gitops_repo_url" {
   default     = "https://github.com/chiendz11/Legal-Ai-Compliance-Checker-gitops.git"
   description = "URL of the GitOps repository for Argo CD sync"
 }
+

@@ -17,3 +17,4 @@ output "s3_documents_bucket" {
   value       = aws_s3_bucket.documents.id
   description = "Name of the S3 bucket for legal documents and audit data"
 }
+

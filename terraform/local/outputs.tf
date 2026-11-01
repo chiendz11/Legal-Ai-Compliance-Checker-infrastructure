@@ -22,3 +22,4 @@ output "postgres_port" {
   value       = 15440
   description = "Local port for PostgreSQL (forward with: .venv/bin/python -m legal_infra forward postgres)"
 }
+
