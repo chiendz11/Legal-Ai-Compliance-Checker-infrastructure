@@ -38,7 +38,7 @@ Trước khi bật demo, đảm bảo máy tính đã cài đặt:
 * **Terraform**: Phiên bản `>= 1.5.0` (`terraform -version`).
 * **k3d**: Phiên bản `v5.9.0` (`k3d version`).
 * **kubectl**: Đã cài đặt (`kubectl version --client`).
-* **Quyền Image GHCR**: Đảm bảo package [legal-ai-compliance-checker-backend](https://github.com/users/chiendz11/packages/container/package/legal-ai-compliance-checker-backend/settings) đã được đặt ở chế độ **Public** để cụm k3d có thể kéo image về mà không cần ImagePullSecrets.
+* **Quyền Image GHCR**: Package [legal-ai-compliance-checker-backend](https://github.com/chiendz11/Legal-Ai-Compliance-Checker/pkgs/container/legal-ai-compliance-checker-backend) liên kết với repo public nên đã tự động ở chế độ **Public**, cụm k3d có thể kéo image về trực tiếp mà không cần cấu hình ImagePullSecrets.
 
 ---
 
