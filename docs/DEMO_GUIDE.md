@@ -95,7 +95,39 @@ curl http://127.0.0.1:18100/health
 curl http://127.0.0.1:18100/api/v1/knowledge
 ```
 
-### 4.3. Truy cập Giao diện Argo CD UI
+### 4.3. Truy cập Giao diện Web (Frontend UI)
+Giao diện người dùng được phục vụ bởi pod `legal-frontend` trên cổng 80:
+```bash
+# Forward port frontend ra máy chủ host:
+kubectl port-forward svc/legal-frontend -n legal-checker 18080:80
+```
+Truy cập trình duyệt tại: **`http://localhost:18080`**
+
+### 4.4. Cấu hình AI Provider (Groq / OpenAI) & Đánh giá Tuân thủ
+Mặc định hệ thống chạy ở chế độ **`ASSESSMENT_LLM=offline`** (các tiêu chí C07 trả về `UNKNOWN`, yêu cầu pháp lý trả về `INSUFFICIENT`/`Chưa đủ căn cứ`).
+
+Để kích hoạt AI đánh giá tuân thủ tự động (Live AI Assessment):
+1. **Tạo Kubernetes Secret `legal-llm-secret`**:
+   ```bash
+   kubectl create secret generic legal-llm-secret -n legal-checker \
+     --from-literal=GROQ_API_KEY="<your-groq-api-key>" \
+     --from-literal=OPENAI_API_KEY="<your-openai-api-key>" \
+     --dry-run=client -o yaml | kubectl apply -f -
+   ```
+2. **Cập nhật ConfigMap qua GitOps** (`environments/local/apps/kustomization.yaml`):
+   - Với **Groq**:
+     ```yaml
+     - ASSESSMENT_LLM=groq
+     - OPENAI_MODEL=openai/gpt-oss-20b
+     ```
+     > **Lưu ý hạn mức Groq Free Tier**: Groq miễn phí có quota giới hạn 8.000 TPM (tokens per minute) và 30 RPM. Đánh giá hợp đồng pháp lý Việt Nam kèm toàn bộ căn cứ điều khoản tiêu tốn ~7.000 tokens/request. Khi demo luồng AI trực tiếp, khuyến nghị sử dụng OpenAI API key hoặc tài khoản Groq có hạn mức mở rộng.
+   - Với **OpenAI**:
+     ```yaml
+     - ASSESSMENT_LLM=openai
+     - OPENAI_MODEL=gpt-4o-mini
+     ```
+
+### 4.5. Truy cập Giao diện Argo CD UI
 Mở port-forward cho Argo CD:
 ```bash
 cd /home/chienqt/Dev/newBTL/Legal-Ai-Compliance-Checker-infrastructure
