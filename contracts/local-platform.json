@@ -9,6 +9,7 @@
   "argocd_namespace": "argocd",
   "ports": {
     "kube_api": 6561,
+    "frontend": 18080,
     "backend": 18100,
     "postgres": 15440,
     "redis": 16380,

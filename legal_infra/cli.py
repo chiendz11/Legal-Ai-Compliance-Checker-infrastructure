@@ -249,6 +249,7 @@ def prepare(args):
 
 def forward(args):
     targets = {'backend': ('service/legal-backend', 8000, NAMESPACE),
+               'frontend': ('service/legal-frontend', 80, NAMESPACE),
                'postgres': ('service/postgres', 5432, NAMESPACE),
                'redis': ('service/redis', 6379, NAMESPACE),
                'argocd': ('service/argocd-server', 443, 'argocd')}
@@ -281,7 +282,7 @@ def main():
     child.add_argument('--redis', action='store_true', help='Enable optional Redis in platform desired state')
     child.set_defaults(function=prepare)
     child = commands.add_parser('forward')
-    child.add_argument('target', choices=['backend', 'postgres', 'redis', 'argocd'])
+    child.add_argument('target', choices=['backend', 'frontend', 'postgres', 'redis', 'argocd'])
     child.set_defaults(function=forward)
     args = parser.parse_args()
     try:
