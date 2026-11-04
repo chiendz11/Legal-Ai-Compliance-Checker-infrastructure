@@ -39,3 +39,5 @@ IMAGE=$(.venv/bin/python -c 'import json; print(json.load(open(".local/backend-i
 Migration thuộc app (`python -m legal_infra migrate`). Seed thuộc app importer (`python -m legal_infra seed --workbook ...`), chỉ dùng DEV_VALIDATION. **Bật worker không yêu cầu seed lại DB**. Một node/PVC local không chứng minh AWS HA hay backup.
 
 [Kiến trúc](docs/ARCHITECTURE.md) · [Runbook giai đoạn 2](docs/PHASE2_LOCAL.md) · [Báo cáo kiểm chứng](docs/PHASE2_VALIDATION.md)
+
+[Xem publication qua CI/CD và trạng thái Argo](docs/PHASE2_PUBLICATION.md).

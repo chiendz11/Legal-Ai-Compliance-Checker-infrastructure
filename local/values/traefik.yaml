@@ -8,6 +8,10 @@ providers:
   kubernetesIngress:
     enabled: true
     ingressClass: legal-local
+    publishedService:
+      enabled: false
+    ingressEndpoint:
+      hostname: app.legal-checker.localhost
   kubernetesCRD:
     enabled: false
   kubernetesGateway:
