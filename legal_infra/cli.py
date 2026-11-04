@@ -139,7 +139,8 @@ def attach_gitops(_):
     for name, path in CONTRACT['applications'].items():
         sync_policy = {
             'automated': {'prune': False, 'selfHeal': True},
-            'syncOptions': ['CreateNamespace=false', 'FailOnSharedResource=true'],
+            'syncOptions': ['CreateNamespace=false', 'FailOnSharedResource=true',
+                            'RespectIgnoreDifferences=true'],
         }
         applications.append({'apiVersion': 'argoproj.io/v1alpha1', 'kind': 'Application',
              'metadata': {'name': 'legal-checker-' + name, 'namespace': 'argocd'},
@@ -147,6 +148,12 @@ def attach_gitops(_):
                       'source': {'repoURL': remote, 'targetRevision': branch, 'path': path},
                       'destination': {'server': 'https://kubernetes.default.svc', 'namespace': NAMESPACE},
                       'syncPolicy': sync_policy}})
+    for application in applications[1:]:
+        if application['metadata']['name'] == 'legal-checker-backend':
+            application['spec']['ignoreDifferences'] = [
+                {'group': 'apps', 'kind': 'Deployment', 'name': name,
+                 'jsonPointers': ['/spec/replicas']}
+                for name in ('legal-backend', 'legal-frontend')]
     apply(applications, namespace='argocd')
     print('Two Applications attached in AUTOMATED sync mode (Argo CD will auto-sync GitOps commits)')
 
@@ -252,7 +259,10 @@ def forward(args):
                'frontend': ('service/legal-frontend', 80, NAMESPACE),
                'postgres': ('service/postgres', 5432, NAMESPACE),
                'redis': ('service/redis', 6379, NAMESPACE),
-               'argocd': ('service/argocd-server', 443, 'argocd')}
+               'argocd': ('service/argocd-server', 443, 'argocd'),
+               'edge': ('service/legal-edge-traefik', 80, 'legal-edge'),
+               'grafana': ('service/legal-monitoring-grafana', 80, 'legal-observability'),
+               'prometheus': ('service/legal-monitoring-kube-prom-prometheus', 9090, 'legal-observability')}
     target, remote, namespace = targets[args.target]
     local = CONTRACT['ports'][args.target]
     kube('port-forward', '--address=127.0.0.1', target, f'{local}:{remote}', namespace=namespace)
@@ -282,7 +292,7 @@ def main():
     child.add_argument('--redis', action='store_true', help='Enable optional Redis in platform desired state')
     child.set_defaults(function=prepare)
     child = commands.add_parser('forward')
-    child.add_argument('target', choices=['backend', 'frontend', 'postgres', 'redis', 'argocd'])
+    child.add_argument('target', choices=['backend', 'frontend', 'postgres', 'redis', 'argocd', 'edge', 'grafana', 'prometheus'])
     child.set_defaults(function=forward)
     args = parser.parse_args()
     try:

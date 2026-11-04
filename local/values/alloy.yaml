@@ -1,0 +1,22 @@
+controller:
+  type: deployment
+  replicas: 1
+alloy:
+  configMap:
+    content: "logging { level = \"info\" }\ndiscovery.kubernetes \"legal\" {\n  role\
+      \ = \"pod\"\n  namespaces { names = [\"legal-checker\"] }\n}\ndiscovery.relabel\
+      \ \"legal\" {\n  targets = discovery.kubernetes.legal.targets\n  rule { source_labels\
+      \ = [\"__meta_kubernetes_namespace\"]\n    target_label = \"namespace\" }\n\
+      \  rule { source_labels = [\"__meta_kubernetes_pod_name\"]\n    target_label\
+      \ = \"pod\" }\n  rule { source_labels = [\"__meta_kubernetes_pod_container_name\"\
+      ]\n    target_label = \"container\" }\n  rule { source_labels = [\"__meta_kubernetes_pod_label_app\"\
+      ]\n    target_label = \"app\" }\n}\nloki.source.kubernetes \"legal\" {\n  targets\
+      \ = discovery.relabel.legal.output\n  forward_to = [loki.write.local.receiver]\n\
+      }\nloki.write \"local\" {\n  endpoint { url = \"http://legal-loki:3100/loki/api/v1/push\"\
+      \ }\n}\n"
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      memory: 192Mi

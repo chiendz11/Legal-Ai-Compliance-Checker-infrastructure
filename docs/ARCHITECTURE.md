@@ -1,36 +1,40 @@
-# Ownership và kiến trúc local
+# Kiến trúc và ownership local
 
 ```text
-Infrastructure CLI
-  ├── k3d cluster + private kubeconfig + namespaces/secrets
-  ├── pinned Argo CD installer
-  └── AppProject + hai Applications (manual sync)
-          └── GitOps repo đã publish
-                ├── platform: PostgreSQL (+ Redis tùy chọn)
-                └── apps: backend, mặc định tắt
+Application: một package backend
+  ├── FastAPI: nhận request, enqueue và đọc DB/report
+  ├── Celery worker: chạy cùng business modules từ cùng image
+  └── Beat: một scheduler riêng cho recovery
+            API → Redis có xác thực → Worker → PostgreSQL
+            API/worker → shared upload/cache/export PVC
 
-Application repo
-  ├── Dockerfile backend → build receipt → k3d import receipt
-  ├── Alembic → owner migration Job một lần
-  └── workbook DEV_VALIDATION → app importer → seed/knowledge receipt
-                                              └── GitOps backend activation
+Infrastructure
+  ├── k3d, private kubeconfig, namespaces, bootstrap credentials
+  ├── Argo CD + project/applications
+  ├── LocalStack + ESO/ClusterSecretStore
+  └── Traefik + Prometheus/Grafana + Loki/Alloy (Helm pins/checksums)
+
+GitOps
+  ├── platform: PostgreSQL, Redis, ExternalSecrets, NetworkPolicies
+  └── apps: shared PVC, backend, frontend, worker, Beat, HPA/PDB, ingress/ServiceMonitor
 ```
 
-Đây là thiết kế có code, chưa có bằng chứng thực thi. Source refs trong `versions/reference-lock.json` dùng để ghi nguồn tham khảo, không chứng minh working trees tương ứng sạch hoặc code đã chạy.
+Không tạo Deployment cho từng business module. API/worker là hai tiến trình của modular monolith; chia sẻ contracts, modules, Alembic, DB và image. PostgreSQL là nguồn trạng thái/kết quả; Redis là broker, không thay DB.
 
-Không sao chép AWS stack, Kafka, MLflow, auth compatibility sidecars hoặc dữ liệu của MaintAI. Backend của Legal Checker là modular monolith; folder business module không tự trở thành service K8s. Redis là hạ tầng dự kiến, không thay implementation worker.
+Infrastructure không sao chép SQL hoặc định nghĩa kết quả pháp lý. Nó gọi operations của app, rồi bàn giao receipts. LocalStack dùng lại credentials có sẵn, ESO Merge giữ lifecycle Secret bootstrap. Không có KMS/IRSA hoặc AWS service thật trong local target.
 
-`contracts/local-platform.json` giống nhau ở hai folder: cluster/context, namespace, tên Secret/DB, ports và source paths. Infrastructure kiểm bản GitOps trước khi gọi generator/owner operation. Thay contract cần cập nhật cả hai nơi và review khả năng tương thích.
+Mọi kubectl/Helm dùng `.local/kubeconfig`, context `k3d-legal-checker-local`. Không đổi current-context toàn máy hoặc sửa MaintAI. API Kubernetes chỉ bind loopback6561; edge/Grafana mở qua loopback forwards cho cluster hiện có.
 
-Infrastructure tạo namespaces và Secrets. Argo child apps bị chặn quản lý Secrets hoặc cluster resources, chỉ sync desired state trong `legal-checker`. Platform/application manifests chỉ thuộc GitOps. Migration/seed là lệnh explicit do app sở hữu; không chạy bằng Argo auto-sync.
+Argo Application đang follow branch thật đã publish. Source local chưa commit không thể xuất hiện trên Argo chỉ nhờ chỉnh file: `phase2 apply-local` lưu/tạm dừng auto-sync của đúng hai Legal applications rồi apply overlay local. Sau publish/review dùng `resume-gitops`; không gọi apply-local là Argo Synced revision mới.
 
-Images platform/Argo dùng pins từ reference và PostgreSQL official registry. Image app local dùng alias theo Docker config ID, kèm source/cluster receipts. Đó không phải registry manifest digest hoặc signed production provenance. Không tự khai báo image đã được build/import khi chưa thực hiện thao tác tương ứng.
+One-node k3d + RWO shared PVC cho phép API replicas và worker cùng đọc file trên một node. Nhiều node cần storage khác. HPA/PDB không bảo vệ việc node duy nhất dừng, Redis local không bảo đảm exactly-once. Giữ run idempotency/lease và kiểm recovery; không suy luận SLA hoặc chất lượng pháp lý từ Pod Ready.
 
-Argo theo branch thật đã publish và sync thủ công; thay desired state qua review Git diff/commit. Repo URL không có sẵn vì người dùng mới yêu cầu hai folder, chưa yêu cầu tạo remote. Private repository cần cấp repository credentials cho Argo ngoài Git.
+Nguồn chính thức:
 
-Nguồn hướng dẫn chính thức đã đối chiếu khi viết source:
+- [Celery Beat: một scheduler](https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html).
+- [ESO AWS Secrets Manager](https://external-secrets.io/latest/provider/aws-secrets-manager/).
+- [Traefik Kubernetes Ingress](https://doc.traefik.io/traefik/reference/install-configuration/providers/kubernetes/kubernetes-ingress/).
+- [Alloy Kubernetes log source](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.source.kubernetes/).
+- [Promtail EOL](https://grafana.com/docs/loki/latest/send-data/promtail/).
 
-- [k3d kubeconfig](https://k3d.io/stable/usage/kubeconfig/): dùng file riêng và tắt cập nhật default/current context.
-- [k3d config](https://k3d.io/stable/usage/configfile/): `v1alpha5`, API binding và volumes.
-- [Argo sync policy](https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/): việc attach Application và việc sync là hai bước riêng.
-- [Kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/): ConfigMap hash và image/replica overrides.
+[Xem runbook](PHASE2_LOCAL.md) và [kết quả kiểm chứng](PHASE2_VALIDATION.md).

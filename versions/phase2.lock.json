@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0",
+  "charts": {
+    "legal-secrets": {
+      "chart": "external-secrets",
+      "repo": "https://charts.external-secrets.io",
+      "version": "2.14.0",
+      "namespace": "legal-secrets",
+      "values": "external-secrets.yaml",
+      "sha256": "0a6d9e91b1ff50adfdbf24b50b582babfa7c5b7df42b21974ca4b3fb88ee5e34"
+    },
+    "legal-edge": {
+      "chart": "traefik",
+      "repo": "https://traefik.github.io/charts",
+      "version": "42.3.0",
+      "namespace": "legal-edge",
+      "values": "traefik.yaml",
+      "sha256": "d5a3180d93a96f3edbf82246037f65c4c8deec6f2b8a12c5cf1e55631c981d78"
+    },
+    "legal-monitoring": {
+      "chart": "kube-prometheus-stack",
+      "repo": "https://prometheus-community.github.io/helm-charts",
+      "version": "92.17.1",
+      "namespace": "legal-observability",
+      "values": "monitoring.yaml",
+      "sha256": "fc8fe107f94a3009c04af63a03fb811393970db0eb973a9c513941acfce565c1"
+    },
+    "legal-loki": {
+      "chart": "loki",
+      "repo": "https://grafana.github.io/helm-charts",
+      "version": "7.5.0",
+      "namespace": "legal-observability",
+      "values": "loki.yaml",
+      "sha256": "bb8b254a57afc6b31ab23a6061216760c91c8ad3499d340442398b88ec603ca8"
+    },
+    "legal-alloy": {
+      "chart": "alloy",
+      "repo": "https://grafana.github.io/helm-charts",
+      "version": "1.15.0",
+      "namespace": "legal-observability",
+      "values": "alloy.yaml",
+      "sha256": "2ecc96c05004cc01a45ab23cb390194ad5259ec9d02b42bf148d4468d013aaa3"
+    }
+  }
+}

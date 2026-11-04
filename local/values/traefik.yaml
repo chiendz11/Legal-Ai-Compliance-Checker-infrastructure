@@ -1,0 +1,31 @@
+deployment:
+  replicas: 1
+ingressClass:
+  enabled: true
+  isDefaultClass: false
+  name: legal-local
+providers:
+  kubernetesIngress:
+    enabled: true
+    ingressClass: legal-local
+  kubernetesCRD:
+    enabled: false
+  kubernetesGateway:
+    enabled: false
+gateway:
+  enabled: false
+service:
+  type: NodePort
+ports:
+  web:
+    nodePort: 32080
+  websecure:
+    nodePort: 32443
+resources:
+  requests:
+    cpu: 25m
+    memory: 64Mi
+  limits:
+    memory: 192Mi
+log:
+  format: json

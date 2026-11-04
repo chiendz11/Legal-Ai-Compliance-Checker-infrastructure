@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: legal-checker-dashboard
+  namespace: legal-observability
+  labels:
+    grafana_dashboard: '1'
+data:
+  legal-checker.json: "{\"uid\": \"legal-checker-local\", \"title\": \"Legal Checker\
+    \ local \u2014 API, LLM audit & worker logs\", \"schemaVersion\": 39, \"version\"\
+    : 1, \"refresh\": \"30s\", \"time\": {\"from\": \"now-1h\", \"to\": \"now\"},\
+    \ \"panels\": [{\"id\": 1, \"title\": \"HTTP requests / second\", \"type\": \"\
+    timeseries\", \"datasource\": {\"type\": \"prometheus\", \"uid\": \"prometheus\"\
+    }, \"gridPos\": {\"x\": 0, \"y\": 0, \"w\": 12, \"h\": 8}, \"targets\": [{\"refId\"\
+    : \"A\", \"expr\": \"sum(rate(legal_http_requests_total[5m]))\"}]}, {\"id\": 2,\
+    \ \"title\": \"HTTP p95 seconds\", \"type\": \"timeseries\", \"datasource\": {\"\
+    type\": \"prometheus\", \"uid\": \"prometheus\"}, \"gridPos\": {\"x\": 12, \"\
+    y\": 0, \"w\": 12, \"h\": 8}, \"targets\": [{\"refId\": \"A\", \"expr\": \"histogram_quantile(0.95,\
+    \ sum by (le) (rate(legal_http_request_duration_seconds_bucket[5m])))\"}]}, {\"\
+    id\": 3, \"title\": \"LLM calls (actual DB audit)\", \"type\": \"timeseries\"\
+    , \"datasource\": {\"type\": \"prometheus\", \"uid\": \"prometheus\"}, \"gridPos\"\
+    : {\"x\": 0, \"y\": 8, \"w\": 12, \"h\": 8}, \"targets\": [{\"refId\": \"A\",\
+    \ \"expr\": \"max by (provider,status) (legal_llm_calls_total)\"}]}, {\"id\":\
+    \ 4, \"title\": \"LLM mean call duration\", \"type\": \"timeseries\", \"datasource\"\
+    : {\"type\": \"prometheus\", \"uid\": \"prometheus\"}, \"gridPos\": {\"x\": 12,\
+    \ \"y\": 8, \"w\": 12, \"h\": 8}, \"targets\": [{\"refId\": \"A\", \"expr\": \"\
+    max by(provider,status)(legal_llm_duration_seconds_total) / clamp_min(max by(provider,status)(legal_llm_calls_total),1)\"\
+    }]}, {\"id\": 5, \"title\": \"Legal API / worker logs\", \"type\": \"logs\", \"\
+    datasource\": {\"type\": \"loki\", \"uid\": \"legal-loki\"}, \"gridPos\": {\"\
+    x\": 0, \"y\": 16, \"w\": 24, \"h\": 10}, \"targets\": [{\"refId\": \"A\", \"\
+    expr\": \"{namespace=\\\"legal-checker\\\"}\"}]}]}"
