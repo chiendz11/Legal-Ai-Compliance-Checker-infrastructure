@@ -86,7 +86,8 @@ def owner():
 
 def kube_command(*arguments, namespace=NAMESPACE):
     owner()
-    if namespace not in {NAMESPACE, CONTRACT['argocd_namespace']}:
+    if namespace not in {NAMESPACE, CONTRACT['argocd_namespace'], 'legal-localstack',
+                          'legal-secrets', 'legal-edge', 'legal-observability'}:
         raise ValueError('Namespace is outside the local contract')
     return ['kubectl', '--kubeconfig', str(PRIVATE / 'kubeconfig'), '--context', CONTEXT,
             '--namespace', namespace, *arguments]

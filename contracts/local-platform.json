@@ -13,7 +13,10 @@
     "backend": 18100,
     "postgres": 15440,
     "redis": 16380,
-    "argocd": 19443
+    "argocd": 19443,
+    "edge": 18880,
+    "grafana": 18300,
+    "prometheus": 18990
   },
   "database": {
     "name": "legal_checker_dev",
@@ -28,5 +31,11 @@
   },
   "bootstrap_owner": "infrastructure",
   "datastore_workload_owner": "gitops",
-  "migration_owner": "application"
+  "migration_owner": "application",
+  "phase2_namespaces": [
+    "legal-localstack",
+    "legal-secrets",
+    "legal-edge",
+    "legal-observability"
+  ]
 }

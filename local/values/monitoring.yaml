@@ -1,0 +1,85 @@
+alertmanager:
+  enabled: false
+defaultRules:
+  create: false
+kubeEtcd:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+nodeExporter:
+  enabled: false
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 96Mi
+prometheusOperator:
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      memory: 192Mi
+prometheus:
+  prometheusSpec:
+    retention: 24h
+    retentionSize: 512MB
+    resources:
+      requests:
+        cpu: 50m
+        memory: 192Mi
+      limits:
+        memory: 512Mi
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorNamespaceSelector:
+      matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: In
+        values:
+        - legal-checker
+        - legal-observability
+    serviceMonitorSelector:
+      matchLabels:
+        release: legal-monitoring
+    ruleSelector:
+      matchLabels:
+        release: legal-monitoring
+grafana:
+  admin:
+    existingSecret: legal-grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password
+  persistence:
+    enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: '1'
+      memory: 768Mi
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: legal-observability
+  additionalDataSources:
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://legal-loki:3100
+    isDefault: false
+    uid: legal-loki
+  startupProbe:
+    httpGet:
+      path: /api/health
+      port: 3000
+    failureThreshold: 60
+    periodSeconds: 5
+    timeoutSeconds: 3

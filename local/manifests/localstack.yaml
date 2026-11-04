@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: legal-localstack
+  namespace: legal-localstack
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: local-path
+  resources:
+    requests: {storage: 1Gi}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: localstack
+  namespace: legal-localstack
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: legal-localstack}}
+  template:
+    metadata: {labels: {app: legal-localstack}}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: localstack
+          image: localstack/localstack:3.8.0
+          env:
+            - {name: SERVICES, value: secretsmanager}
+            - {name: PERSISTENCE, value: '1'}
+            - {name: AWS_DEFAULT_REGION, value: ap-southeast-1}
+            - {name: DEBUG, value: '0'}
+          ports: [{name: api, containerPort: 4566}]
+          readinessProbe:
+            httpGet: {path: /_localstack/health, port: api}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {cpu: '1', memory: 512Mi}
+          volumeMounts: [{name: data, mountPath: /var/lib/localstack}]
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: legal-localstack}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: localstack
+  namespace: legal-localstack
+spec:
+  selector: {app: legal-localstack}
+  ports: [{name: api, port: 4566, targetPort: api}]
